@@ -2,22 +2,14 @@ class Console {
     fun getMenu(list: MutableList<String>) {
         return list.forEachIndexed { index, element -> println("$index. $element") }
     }
-    fun doAction(point:String?,lambdaMenu: MutableList<()->ArrayList<Int>>):ArrayList<Int>{
-        return if(validate(point,lambdaMenu)){
-            lambdaMenu[point!!.toInt()].invoke()
-        }else{
-            println("Такого пунтка не существует")
-            arrayListOf(0)
-        }
+
+    fun doAction(point: String?, lambdaMenu: MutableList<() -> Int>): Int {
+        return lambdaMenu[point!!.toInt()].invoke()
     }
-    private fun validate(request:String?,lambdaMenu: MutableList<()->ArrayList<Int>>):Boolean{
-        val req=request?.toIntOrNull()
-        if(req!=null){
-            if(req in lambdaMenu.indices){
-                return true
-            }
-            return false
-        }
-        return false
+
+    fun validate(request: String?, namedMenu: MutableList<String>): Boolean {
+        val req = request?.toIntOrNull()
+        return if (req != null) req in namedMenu.indices else false
     }
+
 }

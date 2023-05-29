@@ -1,12 +1,10 @@
-class OpenNoteMenu(private val note:Note):Menu() {
-    private val showTextLambda: () -> ArrayList<Int> = showText()
-    private val exitLambda: () -> ArrayList<Int> = exit()
-    private val lambdaMenu= mutableListOf(showTextLambda,exitLambda)
-    val namedMenu = mutableListOf("Просмотреть заметку","Выход")
-    private fun showText(): () -> ArrayList<Int> = {
-        println(note.text)
-        arrayListOf(0)
+class OpenNoteMenu(private val note: Note) {
+    private val showTextLambda: () -> Int = showText()
+    val lambdaMenu = mutableListOf(showTextLambda)
+    val namedMenu = mutableListOf("Просмотреть заметку", "Выход")
+    val key = "text"
+    private fun showText(): () -> Int = {
+        println("Текст заметки:\n" + note.text)
+        -1
     }
-    private fun exit(): () -> ArrayList<Int> = { arrayListOf(0) }
-
 }

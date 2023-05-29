@@ -1,65 +1,40 @@
-fun main(args: Array<String>) {
+fun main() {
+    val dirs = mutableMapOf<Int, Dir>()
     val console = Console()
-    val dirMenu = DirMenu()
-    start(console,dirMenu.namedMenu,dirMenu.lambdaMenu,dirMenu)
+    val dirMenu = DirMenu(dirs)
+    start(dirs, console, dirMenu.namedMenu, dirMenu.lambdaMenu, dirMenu.key, null)
 }
+
 fun start(
-    console:Console,
-    namedMenu:MutableList<String>,
-    lambdaMenu:MutableList<()->ArrayList<Int>>,
-    dirMenu:DirMenu
+    dirs: MutableMap<Int, Dir>,
+    console: Console,
+    namedMenu: MutableList<String>,
+    lambdaMenu: MutableList<() -> Int>,
+    key: String,
+    parentId: Int?
 ) {
-    do{
+    do {
         console.getMenu(namedMenu)
-        val result:ArrayList<Int> = console.doAction(readlnOrNull(),lambdaMenu)
-        if(result.count()==3){
-            when(result[1]){
-                0->{
-                    val noteMenu=NoteMenu(dirMenu.dirs[result[2]]!!)
-                    start(console,noteMenu.namedMenu,noteMenu.lambdaMenu,dirMenu)
+        println("Введите номер пункта меню")
+        val choice = readlnOrNull()
+        if (console.validate(choice, namedMenu)) {
+            if (choice!!.toInt() != namedMenu.count() - 1) {
+                val result = console.doAction(choice, lambdaMenu)
+                if (result != -1) {
+                    if (key == "dir") {
+                        val noteMenu = NoteMenu(dirs[result]!!)
+                        noteMenu.update()
+                        start(dirs, console, noteMenu.namedMenu, noteMenu.lambdaMenu, noteMenu.key, result)
+                    } else if (key == "note") {
+                        val openNoteMenu = OpenNoteMenu(dirs[parentId!!.toInt()]!!.notes[result]!!)
+                        start(dirs, console, openNoteMenu.namedMenu, openNoteMenu.lambdaMenu, openNoteMenu.key, result)
+                    }
                 }
-                1->{
-
-                }
+            } else {
+                break
             }
+        } else {
+            println("Такого пункта нет")
         }
-
-    }while(result[0]!=1)
+    } while (true)
 }
-/*
-fun cycle(menu: Menu){
-    do{
-        println(menu.getMenu())
-        val result=menu.doRequest(readlnOrNull())
-        println(result)
-        if(result.toIntOrNull()!=null){
-            if(menu is DirMenu){
-                val dir=menu.getDirById(result.toInt())
-                cycle(NoteMenu(dir))
-            }else if(menu is NoteMenu){
-                val note=menu.getNoteById(result.toInt())
-                cycle(OpenNoteMenu(note))
-            }
-        }
-    }while(result!="Выход")
-}
- */
-
-/*
-fun cycle(menu:DirMenu){
-    do{
-        println(menu.getMenu())
-        val result=menu.doRequest(readlnOrNull())
-        println(result)
-        if(result.toIntOrNull()!=null){
-            if(menu is DirMenu){
-                val listNotes=menu.getNotesInDir(result.toInt())
-                cycle(NoteMenu(listNotes))
-            }else if(menu is NoteMenu){
-                val note=menu.getNoteById(result.toInt())
-                cycle(OpenNoteMenu())
-            }
-        }
-    }while(result!="Выход")
-}
- */

@@ -1,35 +1,37 @@
-class NoteMenu(private val dir:Dir):Menu() {
-    private val addDirLambda: () -> ArrayList<Int> = addNote()
-    private val exitLambda: () -> ArrayList<Int> = exit()
-    val lambdaMenu= mutableListOf(addDirLambda,exitLambda)
-    val namedMenu = mutableListOf("Создать заметку","Выход")
-    private fun addNote(): () -> ArrayList<Int> = {
+class NoteMenu(private val dir: Dir) {
+    private val addDirLambda: () -> Int = addNote()
+    val lambdaMenu = mutableListOf(addDirLambda)
+    val namedMenu = mutableListOf("Создать заметку", "Выход")
+    val key = "note"
+
+    fun update() {
+        namedMenu.removeLast()
+        for ((key, value) in dir.notes) {
+            namedMenu.add(value.name)
+            lambdaMenu.add(getNote(key))
+        }
+        namedMenu.add("Выход")
+    }
+
+    private fun addNote(): () -> Int = {
         println("Введите имя заметки")
-        val noteName=readlnOrNull()
-        if(noteValidate(noteName)){
+        val noteName = readlnOrNull()
+        if (noteValidate(noteName)) {
+            namedMenu.add(namedMenu.count() - 1, noteName!!)
             println("Введите текст заметки")
-            val noteText=readlnOrNull()
-            dir.notes[lambdaMenu.count()-1] = Note(noteName!!,noteText)
-            val getDirLambda: () -> ArrayList<Int> = getNote(lambdaMenu.count()-1)
-            lambdaMenu.add(lambdaMenu.count()-1,getDirLambda)
+            dir.notes[namedMenu.count() - 2] = Note(noteName, readlnOrNull())
+            lambdaMenu.add(getNote(namedMenu.count() - 2))
             println("Заметка успешно создана")
-            arrayListOf(0)
-        }else{
+            -1
+        } else {
             println("Заметка с таким именем уже существует или введено некорректное имя")
-            arrayListOf(0)
+            -1
         }
     }
-    private fun getNote(i: Int): () -> ArrayList<Int> = { arrayListOf(0,1,i) }
-    private fun exit(): () -> ArrayList<Int> = { arrayListOf(1) }
 
-    private fun noteValidate(request:String?):Boolean{
-        if(request!=null){
-            val filterName=dir.notes.filterValues{it.name==request}
-            if(filterName.isEmpty()){
-                return true
-            }
-            return false
-        }
-        return false
+    private fun getNote(i: Int): () -> Int = { i }
+
+    private fun noteValidate(request: String?): Boolean {
+        return if (!request.isNullOrEmpty()) dir.notes.filterValues { it.name == request }.isEmpty() else false
     }
 }

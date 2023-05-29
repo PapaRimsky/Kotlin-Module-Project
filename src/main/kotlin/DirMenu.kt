@@ -1,36 +1,27 @@
-class DirMenu():Menu() {
-    val dirs= mutableMapOf<Int,Dir>()
-    private val addDirLambda: () -> ArrayList<Int> = addDir()
-    private val exitLambda: () -> ArrayList<Int> = exit()
-    val lambdaMenu = mutableListOf(addDirLambda,exitLambda)
-    val namedMenu = mutableListOf("Создать папку","Выход")
+class DirMenu(private val dirs: MutableMap<Int, Dir>) {
+    private val addDirLambda: () -> Int = addDir()
+    val lambdaMenu = mutableListOf(addDirLambda)
+    val namedMenu = mutableListOf("Создать папку", "Выход")
+    val key = "dir"
 
-    private fun addDir(): () -> ArrayList<Int> = {
+    private fun addDir(): () -> Int = {
         println("Введите имя папки")
-        val dirName:String?=readlnOrNull()
-        if(dirValidate(dirName)){
-            dirs[lambdaMenu.count()-1] = Dir(dirName!!, mutableMapOf())
-            namedMenu.add(lambdaMenu.count()-1,dirName)
-            val getDirLambda: () -> ArrayList<Int> = getDir(lambdaMenu.count()-1)
-            lambdaMenu.add(lambdaMenu.count()-1,getDirLambda)
+        val dirName: String? = readlnOrNull()
+        if (dirValidate(dirName)) {
+            dirs[namedMenu.count() - 1] = Dir(dirName!!, mutableMapOf())
+            namedMenu.add(namedMenu.count() - 1, dirName)
+            lambdaMenu.add(getDir(lambdaMenu.count()))
             println("Папка успешно создана")
-            arrayListOf(0)
-        }else{
+            -1
+        } else {
             println("Папка с таким именем уже существует или введено некорректное имя")
-            arrayListOf(0)
+            -1
         }
     }
-    private fun getDir(i: Int): () -> ArrayList<Int> = { arrayListOf(0,0,i) }
-    private fun exit(): () -> ArrayList<Int> = { arrayListOf(1) }
 
-    private fun dirValidate(request:String?):Boolean{
-        if(request!=null){
-            val filterName=dirs.filterValues{it.name==request}
-            if(filterName.isEmpty()){
-                return true
-            }
-            return false
-        }
-        return false
+    private fun getDir(i: Int): () -> Int = { i }
+
+    private fun dirValidate(request: String?): Boolean {
+        return if (!request.isNullOrEmpty()) dirs.filterValues { it.name == request }.isEmpty() else false
     }
 }
