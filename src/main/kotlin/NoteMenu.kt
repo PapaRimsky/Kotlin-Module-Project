@@ -32,6 +32,6 @@ class NoteMenu(private val dir: Dir) {
     private fun getNote(i: Int): () -> Int = { i }
 
     private fun noteValidate(request: String?): Boolean {
-        return if (!request.isNullOrEmpty()) dir.notes.filterValues { it.name == request }.isEmpty() else false
+        return if (!request.isNullOrBlank()) dir.notes.filterValues { it.name == request }.isEmpty() else false
     }
 }

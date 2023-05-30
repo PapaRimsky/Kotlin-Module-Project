@@ -8,8 +8,7 @@ class Console {
     }
 
     fun validate(request: String?, namedMenu: MutableList<String>): Boolean {
-        val req = request?.toIntOrNull()
-        return if (req != null) req in namedMenu.indices else false
+        return if (!request.isNullOrBlank()) request.toInt() in namedMenu.indices else false
     }
 
 }
