@@ -22,6 +22,6 @@ class DirMenu(private val dirs: MutableMap<Int, Dir>) {
     private fun getDir(i: Int): () -> Int = { i }
 
     private fun dirValidate(request: String?): Boolean {
-        return if (!request.isNullOrEmpty()) dirs.filterValues { it.name == request }.isEmpty() else false
+        return if (!request.isNullOrBlank()) dirs.filterValues { it.name == request }.isEmpty() else false
     }
 }
