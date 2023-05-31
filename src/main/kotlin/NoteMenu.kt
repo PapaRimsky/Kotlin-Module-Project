@@ -19,10 +19,16 @@ class NoteMenu(private val dir: Dir) {
         if (noteValidate(noteName)) {
             namedMenu.add(namedMenu.count() - 1, noteName!!)
             println("Введите текст заметки")
-            dir.notes[namedMenu.count() - 2] = Note(noteName, readlnOrNull())
-            lambdaMenu.add(getNote(namedMenu.count() - 2))
-            println("Заметка успешно создана")
-            -1
+            val text=readlnOrNull()
+            if(validate(text)){
+                dir.notes[namedMenu.count() - 2] = Note(noteName, readlnOrNull())
+                lambdaMenu.add(getNote(namedMenu.count() - 2))
+                println("Заметка успешно создана")
+                -1
+            }else{
+                println("Заметка не может быть пустой")
+                -1
+            }
         } else {
             println("Заметка с таким именем уже существует или введено некорректное имя")
             -1
@@ -33,5 +39,8 @@ class NoteMenu(private val dir: Dir) {
 
     private fun noteValidate(request: String?): Boolean {
         return if (!request.isNullOrBlank()) dir.notes.filterValues { it.name == request }.isEmpty() else false
+    }
+    private fun validate(request: String?): Boolean {
+        return !request.isNullOrBlank()
     }
 }
